@@ -82,6 +82,6 @@ syms T
 Cp_CH4 = A_CH4 + B_CH4*T + C_CH4*T^2 + D_CH4*T^3 + E_CH4*T^4 + F_CH4*T^5 + G_CH4*T^6;
 Cp_CO2 = A_CO2 + B_CO2*T + C_CO2*T^2 + D_CO2*T^3 + E_CO2*T^4 + F_CO2*T^5 + G_CO2*T^6;
 
-f
+
 
 
