@@ -1,15 +1,23 @@
-[n3, Qech] = bilan_energie_F01(n,T)
+function [n23, Qech] = bilan_energie_F01(n,T)
 
 % --- Attribution des paramètres en variables --- %
-n1 = n(1); % débit CH4 (mol/s)
-n2 = n(2); % débit CO2 (mol/s)
+n21_CH4 = n(1); % débit CH4 in (mol/s)
+n21_CO2 = n(2); % débit CO2 in (mol/s)
+n25_CO2 = n(3); % débit CO2 out (mol/s)
+n25_O2 = n(4); % débit O2 out (mol/s)
+n25_H2O = n(5); % débit H2O out (mol/s)
+n22_N2 = n(6); % débit N2 (mol/s)
+n22_O2 = n(7); % débit O2 in (mol/s)
 
 T21 = T(1); % Tin gaz
 T25 = T(2); % Tout fumée
 T23 = T(3); % Tin eau à vaporiser
 T24 = T(4); % Tout vapeur saturée
 
-T0 = 298.15; % Température posée de l'air sec (25C)
+eps = n21_CH4; % Combustion parfait => eps = débit CH4
+
+T22 = 298.15; % Température posée de l'air sec (25C)
+T0 = T22; % Température de référence (K)
 % --- Capacitances thermiques (Yaws sur Knovel) --- %
 
 % Cp du CH4 (Table 165 [112 - 612]K)
@@ -60,22 +68,23 @@ Hr = (2*Hf_H2O + Hf_CO2) - (Hf_CH4 + 2*Hf_O2); % J/mol
 
 % --- Calcul des enthalpies (Ref CH4(g), CO2(g), H2O(liq), N2(g), O2(g) @25C, Pin) --- %
 H1 = integral(Cp_CH4,T0,T21); % CH4 in (J/mol)
-H2 = integral(Cp_CH4,T0,T21); % CO2 in (J/mol)
-H3 = 0; % N2 in (J/mol)
-H4 = 0; % O2 out (J/mol)
-H5 = integral(Cp_CO2,T0,T23); % H2O liq out (J/mol)
+H2 = integral(Cp_CO2,T0,T21); % CO2 in (J/mol)
+H3 = integral(Cp_N2,T0,T22); % N2 in (J/mol)
+H4 = integral(Cp_O2,T0,T22); % O2 out (J/mol)
+H5 = integral(Cp_H2Oliq,T0,T23); % H2O liq out (J/mol)
 
-H6 = integral(Cp_H2Oliq,T0,T25); % CO2 out (J/mol)
-H7 = integral(Cp_H2Oliq,T0,100+273.15) + dHvap + integral(Cp_H2Ovap,100+273.15,T25); % H2Orx in (J/mol)
-H8 = integral(Cp_CH4,T0,T25); % N2 out (J/mol)
-H9 = integral(Cp_CO2,T0,T25); % O2 out (J/mol)
-H10 = integral(Cp_H2Oliq,T1,T24); % H2Ovap out (J/mol)
+H6 = integral(Cp_CO2,T0,T25); % CO2 out (J/mol)
+H7 = integral(Cp_H2Oliq,T0,100+273.15) + Hvap_eau + integral(Cp_H2Ovap,100+273.15,T25); % H2Orx in (J/mol)
+H8 = integral(Cp_N2,T0,T25); % N2 out (J/mol)
+H9 = integral(Cp_O2,T0,T25); % O2 out (J/mol)
+H10 = integral(Cp_H2Oliq,T0,100+273.15) + Hvap_eau + integral(Cp_H2Ovap,100+273.15,T24); % H2Ovap out (J/mol)
 
 % --- Calcul du débit d'eau froide nécessaire (Échangeur de chaleur adiabatique) --- %
-% Q = dH = 0, en isolant n3 (débit d'eau)
-n3 = (Hr + ; % mol/s
+% Q = dH = 0, en isolant n23 (débit d'eau)
+n23 = (eps*Hr + n25_CO2*H6 + n25_H2O*H7 + n22_N2*(H8-H3) + n25_O2*H9 - n21_CH4*H1 - n21_CO2*H2 - n22_O2*H4)/(H10 - H5); % mol/s
 
 % --- Calcul Q de l'échangeur de chaleur --- %
-Qech =  % W
+Qech =  n23*(H10 - H5)% W
 
 
+end

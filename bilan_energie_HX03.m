@@ -1,8 +1,8 @@
 function [n3, Qech] = bilan_energie_HX03(n,T)
 
 % --- Attribution des paramètres en variables --- %
-n1 = n(1); % débit CH4 (mol/s)
-n2 = n(2); % débit CO2 (mol/s)
+n15_CH4 = n(1); % débit CH4 (mol/s)
+n15_CO2 = n(2); % débit CO2 (mol/s)
 
 T1 = T(1); % Tin courant à refroidir
 T2 = T(2); % Tout courant à refroidir
@@ -39,10 +39,10 @@ H6 = integral(Cp_H2Oliq,T1,T4); % H2O out (J/mol)
 
 % --- Calcul du débit d'eau froide nécessaire (Échangeur de chaleur adiabatique) --- %
 % Q = dH = 0, en isolant n3 (débit d'eau)
-n3 = (n1*(H4 - H1) + n2*(H5 - H2))/(H3 - H6); % mol/s
+n3 = (n15_CH4*(H4 - H1) + n15_CO2*(H5 - H2))/(H3 - H6); % mol/s
 
 % --- Calcul Q de l'échangeur de chaleur --- %
-Qech = n1*(H4 - H1) + n2*(H5 - H2); % W
+Qech = n15_CH4*(H4 - H1) + n15_CO2*(H5 - H2); % W
 
 
 end

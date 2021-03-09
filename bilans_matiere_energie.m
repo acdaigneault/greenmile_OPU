@@ -2,18 +2,23 @@ clc
 clear all
 
 % --- Informations connues --- %
-n1 = 100;
-y1_H2S = 0.25;
-y1_H2O = 0.25;
-y1_CH4 = 0.25;
-y1_CO2 = 0.25;
+n10 = 100;
+y10_H2S = 0.25;
+y10_H2O = 0.25;
+y10_CH4 = 0.25;
+y10_CO2 = 0.25;
 
-% --- Variable à poser --- %
+% --- Variables posées --- %
 e = 0.1; % 10% d'excès d'air (Perry & Green, 2008, p.24-22)
-T1 = 350; % K A TROUVER (T opération AD-01)
-T2 = 298.15; % K A VALIDER (T opération AB-01)
-T3 = 280.15; % Moyenne température in de refroidissement (Hall, 2018, p.391)
-T4 = 323.15; % Température max vers tour de refroissement (Hall, 2018, p.394)
+T15 = 350; % K A TROUVER (T opération AD-01)
+T18 = 298.15; % K A VALIDER (T opération AB-01)
+T16 = 280.15; % K Moyenne température in de refroidissement (Hall, 2018, p.391)
+T17 = 323.15; % K Température max vers tour de refroissement (Hall, 2018, p.394)
+
+T21 = T18; % K T opération AB-01
+T25 = 573.15; % K T gaz sortant (A DETERMINER)
+T23 = 308.15; % K Eau à 35C minimum (T opération réacteur)
+T24 = 373.15; % K Vapeur saturée à 1 atm
 
 % Masses molaires
 % M_O2 = 0.032; % kg/mol
@@ -22,59 +27,62 @@ M_CH4 = 0.01604; % kg/mol
 % M_N2 = 0.02801; % kg/mol
 
 % Bilan de matière sur R-03 (CH4, CO2, H2O, H2S)
-n3 = y1_H2O*n1; % Toute l'eau est retirée 
-n2 = n1 - n3;
-y2_CH4 = y1_CH4*n1/n2;
-y2_CO2 = y1_CO2*n1/n2;
-y2_H2S = y1_H2S*n1/n2;
+n11 = y10_H2O*n10; % Toute l'eau est retirée 
+n12 = n10 - n11;
+y12_CH4 = y10_CH4*n10/n12;
+y12_CO2 = y10_CO2*n10/n12;
+y12_H2S = y10_H2S*n10/n12;
 
 % Bilan de matière sur AD-01 (CH4, CO2, H2S)
-n5 = y2_H2S*n2; % Tout le H2S est retiré
-n4 = n2 - n5;
-y4_CH4 = y2_CH4*n2/n4;
-y4_CO2 = y2_CO2*n2/n4;
+n13 = y12_H2S*n12; % Tout le H2S est retiré
+n14 = n12 - n13;
+y14_CH4 = y12_CH4*n12/n14;
+y14_CO2 = y12_CO2*n12/n14;
 
 % Bilan de matière sur COMP-01
-n6 = n4;
-y6_CH4 = y4_CH4;
-y6_CO2 = y4_CO2;
+n15 = n14;
+y15_CH4 = y14_CH4;
+y15_CO2 = y14_CO2;
 
 % Bilan de matière sur HX-03
-n7 = n6;
-y7_CH4 = y6_CH4;
-y7_CO2 = y6_CO2;
+n18 = n15;
+y18_CH4 = y15_CH4;
+y18_CO2 = y15_CO2;
 
 % Bilan d'énergie sur HX-03
-n_HX03 = [n6*y6_CH4 n6*y6_CH4]; % Courants échangeur in = out
-T_HX03 = [T1 T2 T3 T4]; % Température in et out des courants
-[n15, Qech] = bilan_energie_HX03(n_HX03, T_HX03);
-n16 = n15;
+n_HX03 = [n15*y15_CH4 n15*y15_CO2]; % Courants échangeur in = out
+T_HX03 = [T15 T18 T16 T17]; % Température in et out des courants
+[n16, Qech_HX03] = bilan_energie_HX03(n_HX03, T_HX03);
+n17 = n16;
 
 % Composition par spécification de 97% molaire de CH4
-y8_CH4 = 0.97;
-y8_CO2 = 1 - y8_CH4;
-n8 = y7_CH4*n7/y8_CH4;
+y19_CH4 = 0.97;
+y19_CO2 = 1 - y19_CH4;
+n19 = y18_CH4*n18/y19_CH4;
 
 % Bilan sur le point de séparation 
-sp_10 = 0.10; % 10% massique du méthane produit est brulé
-n10 = sp_10*n8;
-n9 = (1 - sp_10)*n8;
-y9_CH4 = y8_CH4;
-y9_CO2 = y8_CO2;
-y10_CH4 = y8_CH4;
-y10_CO2 = y8_CO2;
+sp_21 = 0.10; % 10% massique du méthane produit est brulé
+n21 = sp_21*n19;
+n20 = (1 - sp_21)*n19;
+y20_CH4 = y19_CH4;
+y20_CO2 = y19_CO2;
+y21_CH4 = y19_CH4;
+y21_CO2 = y19_CO2;
 
 % Par relation d'excès de O2 à la fournaise
-n11_O2 = 2*y10_CH4*n10*(e+1); % Par relation d'excès de O2
-n11 = n11_O2/0.21; % Ratio N2/O2 dans l'air sec
-n11_N2 = 0.79*n11;
+n22_O2 = 2*y21_CH4*n21*(e+1); % Par relation d'excès de O2
+n22 = n22_O2/0.21; % Ratio N2/O2 dans l'air sec
+n22_N2 = 0.79*n22;
 
 % Bilan de la réaction dans la fournaise
-eps = y10_CH4*n10; % Combustion complète (on pose)
-n14_CH4 = y10_CH4*n10 - eps;
-n14_CO2 = (1 - y10_CH4) + 2*eps;
-n14_H2O = 2*eps;
-n14_N2 = 0.79*n11;
-n14_O2 = 0.21*n11 - 2*eps;
+eps = y21_CH4*n21; % Combustion complète (on pose)
+n25_CH4 = y21_CH4*n21 - eps;
+n25_CO2 = (1 - y21_CH4) + 2*eps;
+n25_H2O = 2*eps;
+n25_N2 = 0.79*n22;
+n25_O2 = 0.21*n22 - 2*eps;
 
-
+% Bilan d'énergie sur F-01
+n_F01 = [y21_CH4*n21 y21_CO2*n21 n25_CO2 n25_O2 n25_H2O n22_N2 n22_O2];
+T_F01 = [T21 T25 T23 T24];
+[n23, Qech_F01] = bilan_energie_F01(n_F01,T_F01);
