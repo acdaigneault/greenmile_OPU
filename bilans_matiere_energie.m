@@ -8,17 +8,6 @@ y10_H2O = 0.25;
 y10_CH4 = 0.25;
 y10_CO2 = 0.25;
 
-% --- Variables posées --- %
-e = 0.1; % 10% d'excès d'air (Perry & Green, 2008, p.24-22)
-T15 = 350; % K A TROUVER (T opération AD-01)
-T18 = 298.15; % K A VALIDER (T opération AB-01)
-T16 = 280.15; % K Moyenne température in de refroidissement (Hall, 2018, p.391)
-T17 = 323.15; % K Température max vers tour de refroissement (Hall, 2018, p.394)
-
-T21 = T18; % K T opération AB-01
-T25 = 573.15; % K T gaz sortant (A DETERMINER)
-T23 = 308.15; % K Eau à 35C minimum (T opération réacteur)
-T24 = 373.15; % K Vapeur saturée à 1 atm
 
 % Masses molaires
 % M_O2 = 0.032; % kg/mol
@@ -51,6 +40,10 @@ y18_CO2 = y15_CO2;
 
 % Bilan d'énergie sur HX-03
 n_HX03 = [n15*y15_CH4 n15*y15_CO2]; % Courants échangeur in = out
+T15 = 350; % K A TROUVER (T opération AD-01)
+T18 = 298.15; % K A VALIDER (T opération AB-01)
+T16 = 280.15; % K Moyenne température in de refroidissement (Hall, 2018, p.391)
+T17 = 323.15; % K Température max vers tour de refroissement (Hall, 2018, p.394)
 T_HX03 = [T15 T18 T16 T17]; % Température in et out des courants
 [n16, Qech_HX03] = bilan_energie_HX03(n_HX03, T_HX03);
 n17 = n16;
@@ -70,6 +63,7 @@ y21_CH4 = y19_CH4;
 y21_CO2 = y19_CO2;
 
 % Par relation d'excès de O2 à la fournaise
+e = 0.1; % 10% d'excès d'air (Perry & Green, 2008, p.24-22)
 n22_O2 = 2*y21_CH4*n21*(e+1); % Par relation d'excès de O2
 n22 = n22_O2/0.21; % Ratio N2/O2 dans l'air sec
 n22_N2 = 0.79*n22;
@@ -84,5 +78,9 @@ n25_O2 = 0.21*n22 - 2*eps;
 
 % Bilan d'énergie sur F-01
 n_F01 = [y21_CH4*n21 y21_CO2*n21 n25_CO2 n25_O2 n25_H2O n22_N2 n22_O2];
+T21 = T18; % K T opération AB-01
+T25 = 573.15; % K T gaz sortant (A DETERMINER)
+T23 = 308.15; % K Eau à 35C minimum (T opération réacteur)
+T24 = 373.15; % K Vapeur saturée à 1 atm
 T_F01 = [T21 T25 T23 T24];
 [n23, Qech_F01] = bilan_energie_F01(n_F01,T_F01);
