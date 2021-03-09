@@ -1,5 +1,17 @@
 function [n23, Qech] = bilan_energie_F01(n,T)
 
+% ------------------------------------------------------------------------
+% Fonction 'bilan_energie_F01' :
+% Calcul du débit d'eau à vaporiser et  calcul de l'échangeur de chaleur 
+% réalisé entre les deux fluides dans la fournaise.
+% Argument d'entrée :
+% - n : Débits entrants et sortants de la fournaise (mol/s)
+% - T : Températures des courants reliés à la fournaise (K)
+% Argument de sortie :
+% - n23 : Débit d'eau à vaporiser (mol/s)
+% - Qech : Transfert de chaleur (W)
+% ------------------------------------------------------------------------
+
 % --- Attribution des paramètres en variables --- %
 n21_CH4 = n(1); % débit CH4 in (mol/s)
 n21_CO2 = n(2); % débit CO2 in (mol/s)
@@ -84,7 +96,7 @@ H10 = integral(Cp_H2Oliq,T0,100+273.15) + Hvap_eau + integral(Cp_H2Ovap,100+273.
 n23 = (eps*Hr + n25_CO2*H6 + n25_H2O*H7 + n22_N2*(H8-H3) + n25_O2*H9 - n21_CH4*H1 - n21_CO2*H2 - n22_O2*H4)/(H10 - H5); % mol/s
 
 % --- Calcul Q de l'échangeur de chaleur --- %
-Qech =  n23*(H10 - H5)% W
+Qech =  n23*(H10 - H5);% W
 
 
 end

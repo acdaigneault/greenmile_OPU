@@ -1,4 +1,16 @@
-function [n3, Qech] = bilan_energie_HX03(n,T)
+function [n16, Qech] = bilan_energie_HX03(n,T)
+
+% ------------------------------------------------------------------------
+% Fonction 'bilan_energie_HX03' :
+% Calcul du débit d'eau de refroidissement nécessaire pour refroidir le gaz
+% et calcul de l'échangeur de chaleur réalisé entre les deux fluides.
+% Argument d'entrée :
+% - n : Débits entrants et sortants de l'échangeur de chaleur (mol/s)
+% - T : Températures des courants reliés à l'échangeur de chaleur (K)
+% Argument de sortie :
+% - n16 : Débit d'eau de refroidissement (mol/s)
+% - Qech : Transfert de chaleur (W)
+% ------------------------------------------------------------------------
 
 % --- Attribution des paramètres en variables --- %
 n15_CH4 = n(1); % débit CH4 (mol/s)
@@ -39,7 +51,7 @@ H6 = integral(Cp_H2Oliq,T1,T4); % H2O out (J/mol)
 
 % --- Calcul du débit d'eau froide nécessaire (Échangeur de chaleur adiabatique) --- %
 % Q = dH = 0, en isolant n3 (débit d'eau)
-n3 = (n15_CH4*(H4 - H1) + n15_CO2*(H5 - H2))/(H3 - H6); % mol/s
+n16 = (n15_CH4*(H4 - H1) + n15_CO2*(H5 - H2))/(H3 - H6); % mol/s
 
 % --- Calcul Q de l'échangeur de chaleur --- %
 Qech = n15_CH4*(H4 - H1) + n15_CO2*(H5 - H2); % W
