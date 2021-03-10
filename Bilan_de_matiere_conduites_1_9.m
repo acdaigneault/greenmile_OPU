@@ -29,7 +29,7 @@ M_H2O = 2*M_H+M_O; %g/mol
 M_CH4 = M_C+4*M_H; %g/mol
 M_CO2 = M_C+2*M_O; %g/mol
 M_NH3 = M_N+3*M_H; %g/mol
-M_H2S = 2*M_H+M_S; %g/mol allo
+M_H2S = 2*M_H+M_S; %g/mol
 
 % Conduite 1
 m1_MO = 75000*10^6/365/24; %g/h (Base de calcul)
