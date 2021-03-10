@@ -9,7 +9,7 @@
 clc
 clear all
 
-% --- Informations connues --- %
+% --- Informations connues --- % alloo
 n10 = 100;
 y10_H2S = 0.25;
 y10_H2O = 0.25;
