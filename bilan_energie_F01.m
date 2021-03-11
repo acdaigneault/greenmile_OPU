@@ -69,14 +69,17 @@ Cp_H2Ovap = @(T) A_H2Ovap + B_H2Ovap*T + C_H2Ovap*T.^2 + D_H2Ovap*T.^3 + E_H2Ova
 Cp_O2 = @(T) A_O2 + B_O2*T + C_O2*T.^2 + D_O2*T.^3 + E_O2*T.^4 + F_O2*T.^5;
 Cp_N2 = @(T) A_N2 + B_N2*T + C_N2*T.^2 + D_N2*T.^3 + E_N2*T.^4 + F_N2*T.^5;
 
-% --- Informations sur les enthalpies --- %
+% --- Informations sur les enthalpies de combustion ou vaporisation --- %
+Ting = 905; % K température minimum d'ignition du CH4 (Perry & Green, 2008, p. 24-13)
 Hvap_eau = 40.744*1000; % J/mol (table 63)
-Hf_CH4 = -74.5*1000; % J/mol (table 57)
-Hf_O2 = 0*1000; % J/mol (table 56)
-Hf_H2O = -241.83*1000; % J/mol (table 56)
-Hf_CO2 = -393.5*1000; % J/mol (table 57)
+Hc_CH4 = 892.68*1000; % J/mol (table 60)
+Hc_O2 = (-8.4165335332647153 + 0.026684484417*Ting + 5.5210633049e-006*Ting^2 +...
+         -1.17125478e-009*Ting^3 + 1.026e-013*Ting^4)*1000; % J/mol (table 76)
+Hc_H2O = (-9.6702911285054416 + 0.030947811819*Ting + 4.9273659307e-006*Ting^2 +...
+          2.2142365e-010*Ting^3 + -8.579e-014*Ting^4)*1000; % J/mol (table 76)
+Hc_CO2 = 0.02*1000; % J/mol (table 60)
 
-Hr = (2*Hf_H2O + Hf_CO2) - (Hf_CH4 + 2*Hf_O2); % J/mol
+Hr = (2*Hc_H2O + Hc_CO2) - (Hc_CH4 + 2*Hc_O2); % J/mol
 
 % --- Calcul des enthalpies (Ref CH4(g), CO2(g), H2O(liq), N2(g), O2(g) @25C, Pin) --- %
 H1 = integral(Cp_CH4,T0,T21); % CH4 in (J/mol)
@@ -93,7 +96,7 @@ H10 = integral(Cp_H2Oliq,T0,100+273.15) + Hvap_eau + integral(Cp_H2Ovap,100+273.
 
 % --- Calcul du débit d'eau froide nécessaire (Échangeur de chaleur adiabatique) --- %
 % Q = dH = 0, en isolant n23 (débit d'eau)
-n23 = (eps*Hr + n25_CO2*H6 + n25_H2O*H7 + n22_N2*(H8-H3) + n25_O2*H9 - n21_CH4*H1 - n21_CO2*H2 - n22_O2*H4)/(H10 - H5); % mol/s
+n23 = (eps*Hr + n25_CO2*H6 + n25_H2O*H7 + n22_N2*(H8-H3) + n25_O2*H9 - n21_CH4*H1 - n21_CO2*H2 - n22_O2*H4)/(H5 - H10); % mol/s
 
 % --- Calcul Q de l'échangeur de chaleur --- %
 Qech =  n23*(H10 - H5);% W
