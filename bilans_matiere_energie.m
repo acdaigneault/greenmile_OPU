@@ -127,9 +127,9 @@ y18_CO2 = y15_CO2;
 % Bilan d'énergie sur HX-03
 n_HX03 = [n15*y15_CH4 n15*y15_CO2]; %mol/s (Courants échangeur in = out)
 T15 = 343.15; %K (T opération AD-01)
-T18 = 298.15; %K (T opération AB-01)
+T18 = 288.15; %K (T opération AB-01)
 T16 = 280.15; %K (Moyenne température in de refroidissement)(Hall, 2018, p.391)
-T17 = 293.15; %K (Température max vers tour de refroissement et T opération AB-01)(Hall, 2018, p.394)
+T17 = 323.15; %K (Température max vers tour de refroissement et T opération AB-01)(Hall, 2018, p.394)
 T_HX03 = [T15 T18 T16 T17]; %K (Température in et out des courants)
 [n16, Qech_HX03] = bilan_energie_HX03(n_HX03, T_HX03);
 n17 = n16; %mol/s
@@ -165,8 +165,8 @@ n25_O2 = 0.21*n22 - 2*eps; %mol/s
 % Bilan d'énergie sur F-01
 n_F01 = [y21_CH4*n21 y21_CO2*n21 n25_CO2 n25_O2 n25_H2O n22_N2 n22_O2];
 T21 = T18; %K (T opération AB-01)
-T25 = 573.15; %K (T gaz sortant (A DETERMINER))
-T23 = 308.15; %K (Eau à 35C minimum (T opération réacteur))
+T25 = 448.15; %K (T gaz sortant)(Qu & al. 2014)
+T23 = 308.15; %K (Eau à 35C minimum (T opération RX-01))
 T24 = 373.15; %K (Vapeur saturée à 1 atm)
 T_F01 = [T21 T25 T23 T24];
 [n23, Qech_F01] = bilan_energie_F01(n_F01,T_F01);
