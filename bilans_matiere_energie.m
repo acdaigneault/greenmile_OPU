@@ -172,6 +172,52 @@ T_F01 = [T21 T25 T23 T24];
 [n23, Qech_F01] = bilan_energie_F01(n_F01,T_F01);
 
 
-%% Bilan sur les conduites ? à ? (Marieme et Nawshin)
+%% Bilan sur les conduites 19 à 36 (Marieme et Nawshin)
+
+% Bilan de matière sur AB-01
+y19_CH4 = 0.97;
+y19_CO2 = 0.03;
+n18_CO2 = y18_CO2*n18;
+n19 = (n18*y18_CH4)/y19_CH4; 
+n19_CO2 = n19*y19_CO2;
+n26_CO2 = (n18_CO2-n19_CO2)/(1-0.01);
+n18_CH4 = y18_CH4*n18;
+n19_CH4 = n19*y19_CH4;
+n28_CO2 = 0.01*n26_CO2;
+
+syms L_min x28_CO2 x26_CO2
+eq = [L_min == n18_CH4*((y18_CO2-y19_CO2))/((y18_CO2/207)-x28_CO2) , x28_CO2/x26_CO2 == 0.01 , x28_CO2*1.5*L_min+y18_CO2*n18_CH4 == x26_CO2*1.5*L_min+y19_CO2*n18_CH4]; 
+Xeq= solve(eq,[L_min x28_CO2 x26_CO2]);
+Xeq1=struct2array(Xeq); 
+X=eval(Xeq1);
+
+% Retour au bilan de matière sur AB-01
+n28_H2O = 1.5*L_min;  
+n26_H2O = n28_H2O;
+n28 = n28_CO2+n28_H2O;
+n26 = n26_CO2+n26_H2O; 
+y26_H2O = n26_H2O/n26; 
+y26_CO2 = 1-y26_H2O; 
+y28_H2O = n28_H2O/n28; 
+y28_CO2 = 1-y28_H2O;
+
+%Bilans de matière sur la composante 1b: Colonne de désorption AB-02
+S = 2.9974*10^-4; %Solubilité à T=50C
+
+%Échangeur de chaleur HX-04
+n31_H2O = n26_H2O;
+n31_CO2 = n26_CO2;
+
+%Ballon de détente DET-01
+n34_H2O = n31_H2O;
+n33_CO2 = S*n31_H2O;
+n34_CO2 = n31_CO2 - n33_CO2;
+
+%Colonne d'absorption AB-02
+n32_H2O = n34_H2O;
+n32_CO2 = n28_CO2;
+n35_CO2 = 0.99*n26_CO2 - n33_CO2; %Spécification 
+n36_CO2 = n35_CO2 + n32_CO2 - n34_CO2; 
+
 
 
