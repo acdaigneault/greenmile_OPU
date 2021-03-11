@@ -186,20 +186,17 @@ n19_CH4 = n19*y19_CH4;
 n28_CO2 = 0.01*n26_CO2;
 
 syms L_min x28_CO2 x26_CO2
-eq = [L_min == n18_CH4*((y18_CO2-y19_CO2))/((y18_CO2/207)-x28_CO2) , x28_CO2/x26_CO2 == 0.01 , x28_CO2*1.5*L_min+y18_CO2*n18_CH4 == x26_CO2*1.5*L_min+y19_CO2*n18_CH4]; 
+eq = [L_min == n18_CH4*((y18_CO2-y19_CO2))/((y18_CO2/140)-x28_CO2) , x28_CO2/x26_CO2 == 0.01 , x28_CO2*1.5*L_min+y18_CO2*n18_CH4 == x26_CO2*1.5*L_min+y19_CO2*n18_CH4]; 
 Xeq= solve(eq,[L_min x28_CO2 x26_CO2]);
 Xeq1=struct2array(Xeq); 
 X=eval(Xeq1);
-
-% Retour au bilan de matière sur AB-01
-n28_H2O = 1.5*L_min;  
+L_min = X(1,1);
+x26_CO2 = X(1,3);
+x28_CO2 = X(1,2);
+x26_H2O = 1-x26_CO2;
+x28_H2O = 1-x28_CO2;
+n28_H2O = 1.5*L_min;
 n26_H2O = n28_H2O;
-n28 = n28_CO2+n28_H2O;
-n26 = n26_CO2+n26_H2O; 
-y26_H2O = n26_H2O/n26; 
-y26_CO2 = 1-y26_H2O; 
-y28_H2O = n28_H2O/n28; 
-y28_CO2 = 1-y28_H2O;
 
 %Bilans de matière sur la composante 1b: Colonne de désorption AB-02
 S = 2.9974*10^-4; %Solubilité à T=50C
