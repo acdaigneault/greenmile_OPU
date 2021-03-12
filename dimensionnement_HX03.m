@@ -11,17 +11,27 @@ clear all
 % --- Chaleur à transférer --- %
 Q = -1.443371916708512e+05; % W Selon les bilans d'énergie
 
+% --- Informations sur les débits --- %
+n15 = 70.576283371900020; % mol/s
+y15_CH4 = 0.6243; 
+y15_CO2 = 1 - y15_CH4;
+n16 = 44.092918817800125; % mol/s
+
 % --- Variable posée --- %
 U0 = 150; % W/m2K U approximatif moyen pour transfert gaz-eau (Hall, 2018, p.221)
 
-% --- Températures déterminées --- %
+% --- Températures déterminées et pression --- %
 T15 = 343.15; % K T opération AD-01 (Okoro & Sun, 2019)
 T18 = 288.15; % K T opération AB-01, choix de l'équipe
 T16 = 280.15; % K Moyenne température in de refroidissement (Hall, 2018, p.391)
 T17 = 223.15; % K Température max vers tour de refroissement (Hall, 2018, p.394)
+P = 800000; % Pa Pression d'opération de AB-01
+R = 8.314; % m3*Pa/molK
+Tm_gaz = (T15+T18)/2; % Température moyenne 
 
 % --- Informations de conception pour les tubes --- %
 N = 1; % Nombre de paire de tubes
+Npass = 2*N; % Nombre de passages
 Rfo = 0.0003; % m2C/W Facteur de Fouling max pour de l'eau de refroidissement (Sinnott, 2020, p. 780) 
 Rfi = 0.0002; % m2C/W Facteur de Fouling pour les hydrocarbures légers (Sinnott, 2020, p. 780) 
 Dto = 16/1000; % m Diamètre minimum standard pour des tubes en acier (Sinnott, 2020, p.786)
@@ -29,32 +39,50 @@ Dti = (16 - 2*1.7)/1000; % m Diamètre interne (choix arbitraire d'épaisseur selo
 Ltube = 2.4384; % m Longueur posée selon la littérature (Sinnott, 2020, p.785)
 Pratio = 1.25; % Pitch ratio minimal (ratio de distance entre les tubes) (Sinnott, 2020, p.787)
 config = 1; % Type de configuration (1: triangular, 2 : square)
-k = 
+ 
+ 
+% --- Propriétés du gaz naturel et intermédiaires --- %
+% Masses molaires
+M_CH4 = 16.04/1000; % kg/mol
+M_CO2 = 44.01/1000; % kg/mol
+M_gaz = y15_CH4*M_CH4 + y15_CO2*M_CO2; % kg/mol
 
-T = [T15 T18 T16 T17];
-Rf = [Rfi Rfo];
-param_tube = [N Dto Dti Ltube Pratio config];
+% Masse volumique (hypothèse de fluide incompressible)
+rho_gaz = P*M_gaz/(R*Tm_gaz); % kg/m3 
 
-%%
+% Viscosité dynamique
+mu_gaz = 1.03e-5; % Pa*s (Gallagher, 2006, p.51)
+
+% Conductivité
+k_CO2 = -6.07829291578281E-03 + 7.53509863170161E-05*Tm_gaz + ...
+    9.49276579202504E-09*Tm_gaz^2 + -1.12751601050646E-11*Tm_gaz^3; % W/mK (Yaws, 2014, table 84)
+k_CH4 = 5.37671485384522E-03 + 5.15550830467679E-05*Tm_gaz + ...
+    1.66548977272723E-07*Tm_gaz^2 + -5.71678321678305E-11*Tm_gaz^3; % W/mK (Yaws, 2014, table 85)
+k_gaz = 1/(y15_CH4/k_CH4 + y15_CO2/k_CO2); % W/mK (Gilmore & Comings, 1966)
+
+% Capacité thermique
+% Cp du CH4 (Table 165 [112 - 612]K)
+A_CH4 = 46.241914499032198; B_CH4 = -0.15641465372;
+C_CH4 = 0.00063340927021; D_CH4 = -9.8938057655e-007;
+E_CH4 = 8.9552744542e-010; F_CH4 = -3.8921664729e-013;
+Cp_CH4 = A_CH4 + B_CH4*Tm_gaz + C_CH4*Tm_gaz^2 + D_CH4*Tm_gaz^3 + E_CH4*Tm_gaz^4 + F_CH4*Tm_gaz^5; % J/molK
+
+% Cp du CO2 (Table 165 [250 - 1100]K)
+A_CO2 = 22.870906792800799; B_CO2 = 0.053885041357;
+C_CO2 = -3.0277722822e-006; D_CO2 = -5.9414717025e-008;
+E_CO2 = 5.758653574e-011; F_CO2 = -1.7570478487e-014;
+Cp_CO2 = A_CO2 + B_CO2*Tm_gaz + C_CO2*Tm_gaz^2 + D_CO2*Tm_gaz^3 + E_CO2*Tm_gaz^4 + F_CO2*Tm_gaz^5; % J/molK
+
+Cp_gaz = y15_CH4*Cp_CH4 + y15_CH4*Cp_CO2; % J/molK
+
+Q_gaz = n15*M_gaz/rho_gaz;
+
 % --- Attribution des paramètres --- %
 % Températures (K)
-Tci = T(1);
-Tco = T(2);
-Thi = T(3);
-Tho = T(4);
-
-% Facteurs d'encrassement (m2C/W)
-Rfi = Rf(1); 
-Rfo = Rf(2);
-
-% Informations sur les tubes
-N = param_tube(1); 
-Dto = param_tube(2); % m
-Dti = param_tube(3); % m
-Ltube = param_tube(4); % m
-Pratio = param_tube(5); 
-config = param_tube(6); 
-Npass = 2*N; % Nombre de passages
+Tci = T15;
+Tco = T18;
+Thi = T16;
+Tho = T17;
 
 % Facteur de sécurité arbitraire
 Fsec = 0.9; 
@@ -97,6 +125,15 @@ while abs(Ucal - U) > tol
     Dmin = 2*sqrt(Acorr/pi) + 2*Dto; % m Diamètre minimum pour la calandre
     D = ceil(Dmin*39.37)/39.37; % m Arrondis à une valeur de po
     
+    % --- Calcul du coefficient de transfert côté tubes --- %
+    Stubes = Ntube*pi*Dti^2/4; % m2 Aire totale de section dans les tubes
+    v_gaz = Q_gaz/Stubes; % m/s vitesse du gaz
+    Re = rho_gaz*v_gaz*Dti/mu_gaz;
+    Pr = mu_gaz*Cp_gaz/k_gaz; 
+    Nu = 0.021*Re^0.8*Pr^0.33;
+    hi = Nu*k_gaz/Dti;
+
+    
     
 
     
@@ -106,3 +143,8 @@ while abs(Ucal - U) > tol
         break
 
 end
+
+
+% vérifier hypothèse fluide incompressible
+    Stubes = Ntube*pi*Dti^2/4;
+    v_gaz = Q_gaz/Stubes;
