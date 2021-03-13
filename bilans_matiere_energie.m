@@ -214,11 +214,8 @@ n34_CO2 = n31_CO2 - n33_CO2;
 n32_H2O = n34_H2O;
 n32_CO2 = n28_CO2;
 n35_CO2 = 0.99*n26_CO2 - n33_CO2; %Spécification 
-
-%Bilan global sur la colonne AB-02
-n34 = n34_H2O + n34_CO2;
-n32 = n32_H2O + n32_CO2;
-n36 = n35_CO2 + n32 - n34; 
+Vmin = (n34_H2O/4465)*((n34_CO2 - n32_CO2)/n34_CO2);
+n36 = 1.5*Vmin;
 
 
 
