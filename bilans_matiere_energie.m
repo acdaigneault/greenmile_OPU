@@ -214,7 +214,7 @@ n34_CO2 = n31_CO2 - n33_CO2;
 n32_H2O = n34_H2O;
 n32_CO2 = n28_CO2;
 n35_CO2 = 0.99*n26_CO2 - n33_CO2; %Spécification 
-Vmin = (n34_H2O/4465)*((n34_CO2 - n32_CO2)/n34_CO2);
+Vmin = (n34_H2O/3333.33)*((n34_CO2 - n32_CO2)/n34_CO2);
 n36 = 1.5*Vmin;
 
 
