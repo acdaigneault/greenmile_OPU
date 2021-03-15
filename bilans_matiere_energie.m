@@ -199,7 +199,7 @@ n28_H2O = 1.5*L_min;
 n26_H2O = n28_H2O;
 
 %Bilans de matière sur la composante 1b: Colonne de désorption AB-02
-S = 2.9974*10^-4; %Solubilité à T=50C (mol CO2/mol H2O)
+S = 0.000630525; %Solubilité à T=50C (mol CO2/mol H2O)
 
 %Échangeur de chaleur HX-04
 n31_H2O = n26_H2O;
@@ -212,8 +212,9 @@ n34_CO2 = n31_CO2 - n33_CO2;
 
 %Colonne de désorption AB-02
 n32_H2O = n34_H2O;
-n32_CO2 = n28_CO2;
+% n32_CO2 = n28_CO2;
 n35_CO2 = 0.99*n26_CO2 - n33_CO2; %Spécification 
+n32_CO2 = n34_CO2 - n35_CO2;
 Vmin = (n34_H2O/3333.33)*((n34_CO2 - n32_CO2)/n34_CO2);
 n36 = 1.5*Vmin;
 
