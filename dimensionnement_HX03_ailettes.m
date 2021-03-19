@@ -132,21 +132,20 @@ while abs(Ucal - U) > tol
     Hech = Ntpr*Df; % Hauteur de l'échangeur avec ailettes collées
     Loech = Nrangees*sqrt(3)/2*(Dto+2*hf); % Longueur de l'échangeur
     
-    % --- Calcul de la vitesse transversale du gaz --- %
+    % --- Calcul du coefficient de transfert thermique côté gaz --- %
     Atr = Dto*Laech*Ntpr + Nf*2*hf*ef*Laech*Ntpr; % Aire d'une rengée de tube transversale
     Alibre = Hech*Laech - Atr; % Aire de passage du gaz
     v_gaz = Q_gaz/Alibre; % m/s 
-    
-    % --- Calcul du nombre de Reynolds du gaz --- %
-    L_gaz = Dto*Atot/At;
-    Re_gaz = rho_gaz*v_gaz*L_gaz/mu_gaz;
-    Nu_gaz = 0.45*Re_gaz^0.625*Pr_gaz^(1/3)*(Atot/At)^-0.375; %(Frauss, 2015, p,12)
+    L_gaz = Dto*Atot/At; % Longueur caractéristique 
+    Re_gaz = rho_gaz*v_gaz*L_gaz/mu_gaz; % Nombre de Reynolds
+    Nu_gaz = 0.45*Re_gaz^0.625*Pr_gaz^(1/3)*(Atot/At)^-0.375; % Nombre de Nusselt (Frauss, 2015, p.12)
     ho = k_gaz*Nu_gaz/L_gaz; % W/m2K h côté gaz
     
     % Nombre de Reynolds
-    Q_H2
-    v_H2O = (n16*M_H2O/rho_H2O)/(pi*Dti^2/4); % m/s Vitesse de l'eau dans un tube
-    Re_H2O = rho_H2O*v_H2O*Dti/mu_H2O
+    Q_H2O = n16*M_H2O/rho_H2O; % m3/s 
+    v_H2O = Q_H2O/(pi*Dti^2/4); % m/s Vitesse de l'eau dans un tube
+    Re_H2O = rho_H2O*v_H2O*Dti/mu_H2O; 
+    
 
     
     
