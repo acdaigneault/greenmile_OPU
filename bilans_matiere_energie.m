@@ -1,4 +1,4 @@
-% -----------------------------------------------------------------------
+ % -----------------------------------------------------------------------
 % Nom du fichier : bilans_matière_energie.m
 % Description : Calculs des bilans de matière et d'énergie du procédé de 
 %               biométhanisation servant de base de calcul pour le 
