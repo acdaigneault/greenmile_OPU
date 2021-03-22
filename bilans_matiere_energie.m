@@ -45,7 +45,7 @@ M_N2 = 2*M_N; % g/mol
 %% Bilans de masse sur les conduites 1 à 9
 
 % Conduite 1
-m1_MO = 0.25*75000*10^6/365/24/3600; %g/s (Base de calcul)
+m1_MO = 0.25*75000*10^6/8000/3600; %g/s (Base de calcul)
 n1_MO = m1_MO/M_MO; %mol/s (Débit molaire supposé pour les calculs de Buswell et Boyle)
 m1_H2O = 75/25*m1_MO; %g/s (Taux de siccité de 25% de la matière qui entre dans l'usine)
 n1_H2O = m1_H2O/M_H2O; %mol/s
