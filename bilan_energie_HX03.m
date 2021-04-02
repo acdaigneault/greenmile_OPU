@@ -21,6 +21,8 @@ T2 = T(2); % Tout courant à refroidir
 T3 = T(3); % Tin refroidissant
 T4 = T(4); % Tout refroidissant
 
+T0 = 298.15;
+
 % --- Capacitances thermiques (Yaws sur Knovel) --- %
 % Cp du CH4 (Table 165 [112 - 612]K)
 A_CH4 = 46.241914499032198; B_CH4 = -0.15641465372;
@@ -41,13 +43,13 @@ Cp_CH4 = @(T) A_CH4 + B_CH4*T + C_CH4*T.^2 + D_CH4*T.^3 + E_CH4*T.^4 + F_CH4*T.^
 Cp_CO2 = @(T) A_CO2 + B_CO2*T + C_CO2*T.^2 + D_CO2*T.^3 + E_CO2*T.^4 + F_CO2*T.^5; % J/molK
 Cp_H2Oliq = @(T) A_H2Oliq + B_H2Oliq*T + C_H2Oliq*T.^2 + D_H2Oliq*T.^3 + E_H2Oliq*T.^4 + F_H2Oliq*T.^5; % J/molK
 
-% --- Calcul des enthalpies (Ref CH4(g), CO2(g), H2O(liq) @ T6, Pin) --- %
-H1 = 0; % CH4 in (J/mol)
-H2 = 0; % CO2 in (J/mol)
-H3 = integral(Cp_H2Oliq,T1,T3); % H2O in (J/mol)
-H4 = integral(Cp_CH4,T1,T2); % CH4 out (J/mol)
-H5 = integral(Cp_CO2,T1,T2); % CO2 out (J/mol)
-H6 = integral(Cp_H2Oliq,T1,T4); % H2O out (J/mol)
+% --- Calcul des enthalpies (Ref CH4(g), CO2(g), H2O(liq) @ T6, 0.8Mpa) --- %
+H1 = integral(Cp_CH4,T0,T1); % CH4 in (J/mol)
+H2 = integral(Cp_CO2,T0,T1); % CO2 in (J/mol)
+H3 = integral(Cp_H2Oliq,T0,T3); % H2O in (J/mol)
+H4 = integral(Cp_CH4,T0,T2); % CH4 out (J/mol)
+H5 = integral(Cp_CO2,T0,T2); % CO2 out (J/mol)
+H6 = integral(Cp_H2Oliq,T0,T4); % H2O out (J/mol)
 
 % --- Calcul du débit d'eau froide nécessaire (Échangeur de chaleur adiabatique) --- %
 % Q = dH = 0, en isolant n3 (débit d'eau)
