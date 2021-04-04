@@ -186,7 +186,7 @@ n19_CH4 = n19*y19_CH4;
 n28_CO2 = 0.01*n26_CO2;
 
 syms L_min x28_CO2 x26_CO2
-eq = [L_min == n18_CH4*((y18_CO2-y19_CO2))/((y18_CO2/140)-x28_CO2) , x28_CO2/x26_CO2 == 0.01 , x28_CO2*1.5*L_min+y18_CO2*n18_CH4 == x26_CO2*1.5*L_min+y19_CO2*n18_CH4]; 
+eq = [L_min == n18_CH4*((y18_CO2-y19_CO2))/((y18_CO2/159)-x28_CO2) , x28_CO2/x26_CO2 == 0.01 , x28_CO2*1.5*L_min+y18_CO2*n18_CH4 == x26_CO2*1.5*L_min+y19_CO2*n18_CH4]; 
 Xeq= solve(eq,[L_min x28_CO2 x26_CO2]);
 Xeq1=struct2array(Xeq); 
 X=eval(Xeq1);
