@@ -1,4 +1,4 @@
-% -----------------------------------------------------------------------
+ % -----------------------------------------------------------------------
 % Nom du fichier : bilans_matière_energie.m
 % Description : Calculs des bilans de matière et d'énergie du procédé de 
 %               biométhanisation servant de base de calcul pour le 
@@ -45,7 +45,7 @@ M_N2 = 2*M_N; % g/mol
 %% Bilans de masse sur les conduites 1 à 9
 
 % Conduite 1
-m1_MO = 75000*10^6/365/24/3600; %g/s (Base de calcul)
+m1_MO = 0.25*75000*10^6/8000/3600; %g/s (Base de calcul)
 n1_MO = m1_MO/M_MO; %mol/s (Débit molaire supposé pour les calculs de Buswell et Boyle)
 m1_H2O = 75/25*m1_MO; %g/s (Taux de siccité de 25% de la matière qui entre dans l'usine)
 n1_H2O = m1_H2O/M_H2O; %mol/s
@@ -129,7 +129,7 @@ n_HX03 = [n15*y15_CH4 n15*y15_CO2]; %mol/s (Courants échangeur in = out)
 T15 = 343.15; %K (T opération AD-01)
 T18 = 288.15; %K (T opération AB-01)
 T16 = 280.15; %K (Moyenne température in de refroidissement)(Hall, 2018, p.391)
-T17 = 323.15; %K (Température max vers tour de refroissement et T opération AB-01)(Hall, 2018, p.394)
+T17 = 298.15; %K (Température vers tour de refroissement ou autres unités)
 T_HX03 = [T15 T18 T16 T17]; %K (Température in et out des courants)
 [n16, Qech_HX03] = bilan_energie_HX03(n_HX03, T_HX03);
 n17 = n16; %mol/s
@@ -199,7 +199,7 @@ n28_H2O = 1.5*L_min;
 n26_H2O = n28_H2O;
 
 %Bilans de matière sur la composante 1b: Colonne de désorption AB-02
-S = 2.9974*10^-4; %Solubilité à T=50C (mol CO2/mol H2O)
+S = 0.000630525; %Solubilité à T=50C (mol CO2/mol H2O)
 
 %Échangeur de chaleur HX-04
 n31_H2O = n26_H2O;
@@ -212,13 +212,11 @@ n34_CO2 = n31_CO2 - n33_CO2;
 
 %Colonne de désorption AB-02
 n32_H2O = n34_H2O;
-n32_CO2 = n28_CO2;
+% n32_CO2 = n28_CO2;
 n35_CO2 = 0.99*n26_CO2 - n33_CO2; %Spécification 
-
-%Bilan global sur la colonne AB-02
-n34 = n34_H2O + n34_CO2;
-n32 = n32_H2O + n32_CO2;
-n36 = n35_CO2 + n32 - n34; 
+n32_CO2 = n34_CO2 - n35_CO2;
+Vmin = (n34_H2O/3333.33)*((n34_CO2 - n32_CO2)/n34_CO2);
+n36 = 1.5*Vmin;
 
 
 
