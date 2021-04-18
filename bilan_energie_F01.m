@@ -69,37 +69,71 @@ Cp_H2Ovap = @(T) A_H2Ovap + B_H2Ovap*T + C_H2Ovap*T.^2 + D_H2Ovap*T.^3 + E_H2Ova
 Cp_O2 = @(T) A_O2 + B_O2*T + C_O2*T.^2 + D_O2*T.^3 + E_O2*T.^4 + F_O2*T.^5;
 Cp_N2 = @(T) A_N2 + B_N2*T + C_N2*T.^2 + D_N2*T.^3 + E_N2*T.^4 + F_N2*T.^5;
 
-% --- Informations sur les enthalpies de combustion ou vaporisation --- %
+
+% % --- Calcul des enthalpies (Ref CH4(g), CO2(g), H2O(liq), N2(g), O2(g) @25C, Pin) --- %
+% H1 = integral(Cp_CH4,T0,T21); % CH4 in (J/mol)
+% H2 = integral(Cp_CO2,T0,T21); % CO2 in (J/mol)
+% H3 = integral(Cp_N2,T0,T22); % N2 in (J/mol)
+% H4 = integral(Cp_O2,T0,T22); % O2 out (J/mol)
+% H5 = integral(Cp_H2Oliq,T0,T23); % H2O liq out (J/mol)
+% 
+% H6 = integral(Cp_CO2,T0,T25); % CO2 out (J/mol)
+% H7 = integral(Cp_H2Oliq,T0,100+273.15) + Hvap_eau + integral(Cp_H2Ovap,100+273.15,T25); % H2Orx in (J/mol)
+% H8 = integral(Cp_N2,T0,T25); % N2 out (J/mol)
+% H9 = integral(Cp_O2,T0,T25); % O2 out (J/mol)
+% H10 = integral(Cp_H2Oliq,T0,100+273.15) + Hvap_eau + integral(Cp_H2Ovap,100+273.15,T24); % H2Ovap out (J/mol)
+
+
+% --- Puissance introduite --- %
 Ting = 905; % K température minimum d'ignition du CH4 (Perry & Green, 2008, p. 24-13)
-Hvap_eau = 40.744*1000; % J/mol (table 63)
-Hc_CH4 = 892.68*1000; % J/mol (table 60)
+Hvap_eau = 40.744*1000; % J/mol Enthalpie de vaporisation (table 63)
+Hc_CH4 = 892.68*1000; % J/mol Enthalpie de combustion(table 60)
 Hc_O2 = (-8.4165335332647153 + 0.026684484417*Ting + 5.5210633049e-006*Ting^2 +...
-         -1.17125478e-009*Ting^3 + 1.026e-013*Ting^4)*1000; % J/mol (table 76)
+         -1.17125478e-009*Ting^3 + 1.026e-013*Ting^4)*1000; % J/mol Enthalpie de combustion (table 76)
 Hc_H2O = (-9.6702911285054416 + 0.030947811819*Ting + 4.9273659307e-006*Ting^2 +...
-          2.2142365e-010*Ting^3 + -8.579e-014*Ting^4)*1000; % J/mol (table 76)
-Hc_CO2 = 0.02*1000; % J/mol (table 60)
+          2.2142365e-010*Ting^3 + -8.579e-014*Ting^4)*1000; % J/mol Enthalpie de combustion (table 76)
+Hc_CO2 = 0.02*1000; % J/mol Enthalpie de combustion (table 60)
 
-Hr = (2*Hc_H2O + Hc_CO2) - (Hc_CH4 + 2*Hc_O2); % J/mol
+Hr = (2*Hc_H2O + Hc_CO2) - (Hc_CH4 + 2*Hc_O2); % J/mol % Loi de Hess
+Pi = n21_CH4*Hr; % W Puissance introduite 
 
-% --- Calcul des enthalpies (Ref CH4(g), CO2(g), H2O(liq), N2(g), O2(g) @25C, Pin) --- %
-H1 = integral(Cp_CH4,T0,T21); % CH4 in (J/mol)
-H2 = integral(Cp_CO2,T0,T21); % CO2 in (J/mol)
-H3 = integral(Cp_N2,T0,T22); % N2 in (J/mol)
-H4 = integral(Cp_O2,T0,T22); % O2 out (J/mol)
-H5 = integral(Cp_H2Oliq,T0,T23); % H2O liq out (J/mol)
+% --- Rendement --- %
+n = 0.8; % rendement de la fournaise (Sinnott, 2020, p.906)
+Pu = n*Pi; % W Puissance utile transmise aux tubes
 
-H6 = integral(Cp_CO2,T0,T25); % CO2 out (J/mol)
-H7 = integral(Cp_H2Oliq,T0,100+273.15) + Hvap_eau + integral(Cp_H2Ovap,100+273.15,T25); % H2Orx in (J/mol)
-H8 = integral(Cp_N2,T0,T25); % N2 out (J/mol)
-H9 = integral(Cp_O2,T0,T25); % O2 out (J/mol)
-H10 = integral(Cp_H2Oliq,T0,100+273.15) + Hvap_eau + integral(Cp_H2Ovap,100+273.15,T24); % H2Ovap out (J/mol)
+% --- Débit d'eau à vaporiser --- %
+M_H2O = 18.015/1000; % kg/mol Masse molaire
+Tin_H2O = 25+3
+m_H2O = Pu/(M_H2O*i(integral(Cp_H2Oliq,T0,100+273.15) + Hvap_eau + integral(Cp_H2Ovap,100+273.15,T24))
 
-% --- Calcul du débit d'eau froide nécessaire (Échangeur de chaleur adiabatique) --- %
-% Q = dH = 0, en isolant n23 (débit d'eau)
-n23 = (eps*Hr + n25_CO2*H6 + n25_H2O*H7 + n22_N2*(H8-H3) + n25_O2*H9 - n21_CH4*H1 - n21_CO2*H2 - n22_O2*H4)/(H5 - H10); % mol/s
 
-% --- Calcul Q de l'échangeur de chaleur --- %
-Qech =  n23*(H10 - H5);% W
+% --- Section radiante --- %
+transfert_rad = 0.7; % 70% transféré dans la partie radiante (Sinnott, 2020, p.609
+qrad = transfert_rad*Pu; % Énergie dans les tubes radiants
+
+
+% --- Rayonnement --- %
+F = 1; % Facteur de vue (tubes collés)
+a = 1; % absorptivité
+S = 5; % surfaces avec tubes 
+
+
+
+
+
+Qech = Pu;
+n23 = 0;
+
+
+% % --- Calcul du débit d'eau froide possible de réchauffer --- %
+% 
+% 
+% 
+% % Q = dH = 0, en isolant n23 (débit d'eau)
+% n23 = (eps*Hr + n25_CO2*H6 + n25_H2O*H7 + n22_N2*(H8-H3) + n25_O2*H9 - n21_CH4*H1 - n21_CO2*H2 - n22_O2*H4)/(H5 - H10); % mol/s
+% 
+% % --- Calcul Q de l'échangeur de chaleur --- %
+% Qech =  n23*(H10 - H5);% W
 
 
 end

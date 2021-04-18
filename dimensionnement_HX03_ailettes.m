@@ -10,6 +10,8 @@ clear all
 
 % --- Chaleur à transférer --- %
 Q = 39512; % W Selon les bilans d'énergie
+eff = 1.1; % Facteur de sécurité si perte vers environnement
+Q = eff*Q; % W
 
 % --- Informations sur les débits --- %
 n15 = 19.3203; % mol/s
@@ -18,7 +20,7 @@ y15_CO2 = 1 - y15_CH4;
 n16 = 28.9135; % mol/s
 
 % --- Variable posée --- %
-U0 = 50; % W/m2K U approximatif pour crossflow eau-air (Bergman, 2018, p. 650)
+U0 = 150; % W/m2K U approximatif pour un trasnfert gaz-eau (Hall, 2018, p.221)
 
 % --- Températures déterminées et pression --- %
 T15 = 343.15; % K T opération AD-01 (Okoro & Sun, 2019)
@@ -47,10 +49,10 @@ Af1m = Nf*(2*pi*(Df^2 - Dto^2)/4 + ef*pi*Df); % m2 Aire d'une ailette pour 1m
 Atot1m = Ate1m + Af1m; % m2 Aire totale extérieure pour 1m
 Nrangees = 8; % Nombre de rangées (Frass, 2015, p.53)
 espace = 5/1000; % m Espace horizontal arbitraire de 5 mm entre les ailettes des tubes
-Ntubes = 33; % 7-8 tubes par rangées
+Ntubes = 36; % 5-4 tubes par rangées
 Ntprmax = 5; % Nombre max de tube pour une rangée
-Hech = Ntprmax*(Df+espace); % Hauteur de l'échangeur 
-Lech = Nrangees*sqrt(3)/2*(Df+espace); % Longueur de l'échangeur
+Hech = Ntprmax*(Df+espace)+espace; % Hauteur de l'échangeur 
+Lech = Nrangees*(sqrt(3)/2*Df+espace)+espace; % Longueur de l'échangeur
 pf = 1/Nf; % m Pitch de l'ailette (distance entre deux ailettes)
 
 % --- Autre infos --- %
@@ -128,7 +130,7 @@ while abs(Ucal - U) > tol
     Lt = Wech;
     
     % --- Calcul du coefficient de transfert thermique côté gaz --- %
-    Alibre = Wech*(Hech - Ntprmax*(Dto+Nf*Df*ef)); % Aire de passage du gaz
+    Alibre = Wech*(Hech - Ntprmax*(Dto+Nf*2*hf*ef)); % Aire de passage du gaz
     v_gaz = Q_gaz/Alibre; % m/s 
     L_gaz = Dto; % Longueur caractéristique 
     Re_gaz = rho_gaz*v_gaz*L_gaz/mu_gaz; % Nombre de Reynolds
@@ -145,7 +147,7 @@ while abs(Ucal - U) > tol
     % --- Calcul de l'aire interne --- %
     Ai = pi*Dti*Lt*Ntubes; % m2 Aire totale dans les tubes
     
-    % --- Calcul de l'éefficacité des ailettes --- %
+    % --- Calcul de l'efficacité des ailettes --- %
     m = sqrt(2*ho/(k_al*ef));
     nf = tanh(m*hf)/(m*hf); % Efficacité d'une ailette
     no = 1 - (Af1m/Atot1m)*(1-nf); % Efficacité d'une surface
@@ -154,11 +156,26 @@ while abs(Ucal - U) > tol
     Ucal = 1/((1/ho+Rfo)/no*(At1m/Af1m) + (Dto*log(Dto/Dti))/(2*k_al) + Dto/Dti*(Rfi + 1/hi)); % W/m2K (Sinnott, 2020, p.775 et p.891)
 end
 
+% --- Perte de charge dans les tubes --- %
+Uo = Ucal;
+Ui = Dto*Uo/Dti; % Wm2
+T_wall = (Ui*Tm_gaz + Tm_H2O*(hi - Ui))/hi; % K Température estimée de la surface (Sinnott, 2020, p.807)
+mu_wall = 721.2e-6; % Pas Viscosité à la surface (Bergman, 2018, p.919)
+jf = 8.5e-3;
+M = 0.25;
+dP_tube = 8*jf*(Lt/Dti)*rho_H2O*v_H2O^2/2*(mu_H2O/mu_wall)^-M;
 
-fprintf('Hauteur : %.2f m\n', Hech)
-fprintf('Largueur : %.2f m\n', Wech)
-fprintf('Longueur : %.2f m\n', Lech)
-fprintf('U : %.2f W/m2K \n', Ucal)
-fprintf('Surface extérieur : %.2f m2\n', Ao)
-fprintf('Coefficient de transfert : %.2f W/m2K\n', ho)
+Dti2 = 0.0779; % Conduite d'entrée d'eau 3po cédule 40 (Crane)
+fm = 0.042; % (Crane)
+Kin = 0.78;
+Kout = 1;
+dP = dP_tube + rho_H2O*v_H2O^2/2*Ntubes*(Kin+Kout) + rho_H2O*(4*Q_H2O/(pi*Dti2^2))^2/2*(Kin+Kout); % Pa Perte de charge
+
+fprintf('Hauteur : %.4f m\n', Hech)
+fprintf('Largueur : %.4f m\n', Wech)
+fprintf('Longueur : %.4f m\n', Lech)
+fprintf('U : %.4f W/m2K \n', Ucal)
+fprintf('Surface extérieur : %.4f m2\n', Ao)
+fprintf('Coefficient de transfert : %.4f W/m2K\n', ho)
+fprintf('Perte de charge côté eau/tube : %.4f Pa\n', dP)
 

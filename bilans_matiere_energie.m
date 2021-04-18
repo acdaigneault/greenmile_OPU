@@ -157,19 +157,15 @@ n22_N2 = 0.79*n22; %mol/s
 % Bilan de la réaction dans la fournaise
 eps = y21_CH4*n21; %mol/s (Hypothèse: Combustion complète)
 n25_CH4 = y21_CH4*n21 - eps; %mol/s
-n25_CO2 = (1 - y21_CH4) + 2*eps; %mol/s
+n25_CO2 = (1 - y21_CH4)*n21 + eps; %mol/s
 n25_H2O = 2*eps; %mol/s
 n25_N2 = 0.79*n22; %mol/s
 n25_O2 = 0.21*n22 - 2*eps; %mol/s
-
-% Bilan d'énergie sur F-01
-n_F01 = [y21_CH4*n21 y21_CO2*n21 n25_CO2 n25_O2 n25_H2O n22_N2 n22_O2];
-T21 = T18; %K (T opération AB-01)
-T25 = 448.15; %K (T gaz sortant)(Qu & al. 2014)
-T23 = 308.15; %K (Eau à 35C minimum (T opération RX-01))
-T24 = 373.15; %K (Vapeur saturée à 1 atm)
-T_F01 = [T21 T25 T23 T24];
-[n23, Qech_F01] = bilan_energie_F01(n_F01,T_F01);
+n25 = (n25_CH4 + n25_CO2 + n25_O2 + n25_H2O + n25_N2);
+y25_CO2 = n25_CO2/n25;
+y25_O2 = n25_O2/n25;
+y25_H2O = n25_H2O/n25;
+y25_N2 = n25_N2/n25;
 
 
 %% Bilan sur les conduites 19 à 36 (Marieme et Nawshin)
@@ -212,7 +208,6 @@ n34_CO2 = n31_CO2 - n33_CO2;
 
 %Colonne de désorption AB-02
 n32_H2O = n34_H2O;
-% n32_CO2 = n28_CO2;
 n35_CO2 = 0.99*n26_CO2 - n33_CO2; %Spécification 
 n32_CO2 = n34_CO2 - n35_CO2;
 Vmin = (n34_H2O/3333.33)*((n34_CO2 - n32_CO2)/n34_CO2);
