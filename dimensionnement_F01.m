@@ -357,7 +357,7 @@ while abs(Usurco - Usurco_cal)/Usurco > 0.1
     vsurc = Vsurc_H2O/(nbtsurc*pi*Dti^2/4); 
     Resurc_H2O = rhosurc_H2O*vsurc*Dti/musurc_H2O; 
     n = 0.4; 
-    Nusurci_H2O = 0.023*Resurc_H2O^(4/5)*Prsurcs_gaz^n; % (Bergman, 2018, p.519)
+    Nusurci_H2O = 0.023*Resurc_H2O^(4/5)*Prsurc_gaz^n; % (Bergman, 2018, p.519)
     hsurci = Nusurci_H2O*ksurc_H2O/Dti; % W/m2Ki
     % Calcul des résistances
     Rsurc_cond = log(Dto/Dti)/(2*pi*nbtsurc*Ltsurc*k_ss); % Résistance thermique conduction
